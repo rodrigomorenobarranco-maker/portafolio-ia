@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portafolio — Automatización de procesos industriales y de servicios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-void: #060000;
+    --bg-deep: #1c0002;
+    --bg-panel: #2b0004;
+    --red-primary: #c40010;
+    --red-bright: #ff2b2b;
+    --red-deep: #4d0008;
+    --ember: #ff6a00;
+    --chrome-light: #ffd9d2;
+    --chrome-white: #fff6f3;
+    --text-main: #fff1ee;
+    --text-muted: #d99a92;
+    --border-chrome: linear-gradient(135deg, #ffffff 0%, #ff2b2b 30%, #33040a 60%, #ffffff 100%);
+    --radius-panel: 6px;
+    --max-w: 1180px;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:var(--bg-void);
+    color:var(--text-main);
+    font-family:'Space Grotesk', sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+
+  h1,h2,h3, .logo, .nav-links a, .chip, .btn-primary{
+    font-family:'Orbitron', 'Space Grotesk', sans-serif;
+  }
+
+  a{ color:inherit; text-decoration:none; }
+  ul{ list-style:none; }
+  img,svg{ display:block; max-width:100%; }
+
+  :focus-visible{
+    outline:2px solid var(--ember);
+    outline-offset:3px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+  }
+
+  /* ---------- layout helpers ---------- */
+  .wrap{ max-width:var(--max-w); margin:0 auto; padding:0 24px; }
+
+  /* ---------- animated curse-energy background ---------- */
+  .bg-animated{
+    position:fixed; inset:-15%; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(255,43,43,0.4), transparent 42%),
+      radial-gradient(circle at 82% 68%, rgba(255,106,0,0.26), transparent 46%),
+      radial-gradient(circle at 50% 90%, rgba(196,0,16,0.28), transparent 55%);
+    background-size:220% 220%;
+    filter:blur(50px);
+    animation:drift 20s ease-in-out infinite alternate;
+  }
+  @keyframes drift{
+    0%{ background-position:0% 20%, 100% 80%, 40% 100%; }
+    100%{ background-position:80% 60%, 10% 30%, 60% 40%; }
+  }
+
+  .grid-overlay{
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      linear-gradient(rgba(255,43,43,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,43,43,0.07) 1px, transparent 1px);
+    background-size:48px 48px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+  }
+
+  /* floating ember particles for extra motion */
+  .embers{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .ember-dot{
+    position:absolute; bottom:-5%; width:5px; height:5px; border-radius:50%;
+    background:radial-gradient(circle, #ffcf9e 0%, var(--ember) 55%, transparent 75%);
+    box-shadow:0 0 10px 2px rgba(255,106,0,0.6);
+    animation:rise linear infinite;
+    opacity:0;
+  }
+  @keyframes rise{
+    0%{ transform:translateY(0) translateX(0); opacity:0; }
+    10%{ opacity:0.9; }
+    90%{ opacity:0.5; }
+    100%{ transform:translateY(-110vh) translateX(var(--drift, 40px)); opacity:0; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .bg-animated, .ember-dot{ animation:none; }
+    .embers{ display:none; }
+  }
+
+  /* ---------- nav ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(10,0,2,0.78);
+    backdrop-filter:blur(14px) saturate(140%);
+    border-bottom:1px solid rgba(255,43,43,0.25);
+  }
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 24px;
+    max-width:var(--max-w); margin:0 auto;
+  }
+  .logo{
+    font-weight:700; font-size:1.05rem; letter-spacing:0.04em;
+    background:linear-gradient(90deg, var(--chrome-white), var(--red-bright), var(--chrome-white));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .nav-links{ display:flex; gap:32px; font-size:0.82rem; letter-spacing:0.06em; }
+  .nav-links a{
+    color:var(--text-muted); transition:color 0.2s ease;
+    position:relative; padding-bottom:2px;
+  }
+  .nav-links a:hover{ color:var(--chrome-light); }
+  .nav-links a::after{
+    content:''; position:absolute; left:0; bottom:-4px; width:0; height:1px;
+    background:var(--ember); transition:width 0.25s ease;
+  }
+  .nav-links a:hover::after{ width:100%; }
+
+  .burger{
+    display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:8px;
+  }
+  .burger span{ width:22px; height:2px; background:var(--chrome-light); display:block; }
+
+  .mobile-menu{
+    display:none; position:fixed; inset:0; z-index:100;
+    background:rgba(10,0,2,0.98);
+    flex-direction:column; align-items:center; justify-content:center; gap:36px;
+  }
+  .mobile-menu.open{ display:flex; }
+  .mobile-menu a{ font-size:1.4rem; color:var(--chrome-light); font-family:'Orbitron',sans-serif; }
+  .mobile-close{
+    position:absolute; top:20px; right:24px; background:none; border:none;
+    color:var(--chrome-light); font-size:1.8rem; cursor:pointer; line-height:1;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative; z-index:1;
+    min-height:92vh; display:flex; align-items:center;
+    padding:80px 24px 60px;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:''; position:absolute; inset:0; z-index:-1;
+    background:
+      radial-gradient(circle at 78% 18%, rgba(255,106,0,0.28), transparent 45%),
+      radial-gradient(circle at 15% 85%, rgba(196,0,16,0.38), transparent 55%),
+      linear-gradient(180deg, var(--bg-void) 0%, var(--bg-deep) 100%);
+  }
+  .orb{
+    position:absolute; top:12%; right:6%; width:340px; height:340px; border-radius:50%;
+    background:conic-gradient(from 200deg, #fff6f3, #ff2b2b 25%, #2b0004 50%, #ff6a00 75%, #fff6f3 100%);
+    box-shadow:0 0 90px rgba(255,43,43,0.55), inset -20px -20px 60px rgba(0,0,0,0.5), inset 15px 15px 40px rgba(255,255,255,0.35);
+    filter:blur(0.3px);
+    opacity:0.9;
+    animation:pulse-orb 6s ease-in-out infinite;
+  }
+  @keyframes pulse-orb{
+    0%,100%{ box-shadow:0 0 90px rgba(255,43,43,0.55), inset -20px -20px 60px rgba(0,0,0,0.5), inset 15px 15px 40px rgba(255,255,255,0.35); }
+    50%{ box-shadow:0 0 130px rgba(255,43,43,0.75), inset -20px -20px 60px rgba(0,0,0,0.5), inset 15px 15px 40px rgba(255,255,255,0.4); }
+  }
+  .hero-content{ position:relative; max-width:760px; }
+  .eyebrow-tag{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:0.72rem; letter-spacing:0.14em; color:var(--chrome-light);
+    border:1px solid rgba(255,43,43,0.5); padding:6px 14px; border-radius:999px;
+    background:rgba(196,0,16,0.14); margin-bottom:28px;
+  }
+  .eyebrow-tag::before{
+    content:''; width:6px; height:6px; border-radius:50%; background:var(--ember);
+    box-shadow:0 0 8px var(--ember);
+  }
+  .hero h1{
+    font-weight:900; line-height:0.98; letter-spacing:0.01em;
+    font-size:clamp(3rem, 9vw, 6.4rem);
+    background:linear-gradient(180deg, var(--chrome-white) 0%, var(--chrome-light) 40%, var(--red-bright) 75%, var(--chrome-white) 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    text-shadow:0 6px 40px rgba(255,43,43,0.35);
+    margin-bottom:20px;
+  }
+  .hero p.sub{
+    font-size:clamp(1rem, 2.4vw, 1.3rem);
+    color:var(--text-muted);
+    max-width:520px;
+    margin-bottom:36px;
+  }
+  .hero-cta{ display:flex; gap:16px; flex-wrap:wrap; }
+  .btn-primary, .btn-ghost{
+    font-size:0.85rem; letter-spacing:0.06em; padding:14px 28px; border-radius:4px;
+    cursor:pointer; transition:transform 0.2s ease, box-shadow 0.2s ease;
+    border:none;
+    display:inline-block;
+  }
+  .btn-primary{
+    color:#2a0004;
+    background:linear-gradient(180deg, var(--chrome-white), var(--chrome-light) 55%, var(--red-bright));
+    box-shadow:0 10px 30px rgba(255,43,43,0.4), inset 0 1px 0 rgba(255,255,255,0.8);
+    font-weight:700;
+  }
+  .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 14px 36px rgba(255,106,0,0.4); }
+  .btn-ghost{
+    background:transparent; border:1px solid rgba(255,217,210,0.4); color:var(--chrome-light);
+  }
+  .btn-ghost:hover{ border-color:var(--ember); color:var(--ember); }
+
+  /* ---------- section shared ---------- */
+  section{ position:relative; z-index:1; padding:100px 24px; }
+  .section-head{ margin-bottom:56px; max-width:640px; }
+  .section-head h2{
+    font-size:clamp(2rem, 4vw, 2.8rem);
+    font-weight:700;
+    color:var(--text-main);
+    margin-bottom:14px;
+  }
+  .section-head p{ color:var(--text-muted); font-size:1rem; }
+
+  /* ---------- filters ---------- */
+  .filters{ display:flex; gap:12px; margin-bottom:44px; flex-wrap:wrap; }
+  .chip{
+    font-size:0.78rem; letter-spacing:0.05em; padding:10px 20px; border-radius:999px;
+    border:1px solid rgba(255,43,43,0.35); background:rgba(43,0,4,0.5);
+    color:var(--text-muted); cursor:pointer; transition:all 0.2s ease;
+  }
+  .chip:hover{ color:var(--chrome-light); border-color:var(--chrome-light); }
+  .chip.active{
+    background:linear-gradient(90deg, var(--red-primary), var(--ember));
+    color:var(--chrome-white); border-color:transparent;
+  }
+
+  /* ---------- catalog grid : blank editable task cards ---------- */
+  .catalog-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:22px;
+  }
+  .task-card{
+    position:relative; border-radius:var(--radius-panel);
+    padding:2px; background:var(--border-chrome);
+    background-size:220% 220%;
+    transition:transform 0.25s ease, background-position 0.6s ease;
+  }
+  .task-card:hover{ transform:translateY(-6px); background-position:100% 0%; }
+  .task-card-inner{
+    height:100%; border-radius:calc(var(--radius-panel) - 1px);
+    background:#ffffff;
+    color:#1c1414;
+    padding:22px 22px 20px;
+    display:flex; flex-direction:column; gap:12px;
+    min-height:230px;
+  }
+  .task-top{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .task-index{
+    font-family:'Orbitron', sans-serif; font-size:0.72rem; color:var(--red-primary);
+    letter-spacing:0.08em;
+  }
+  .task-cat{
+    font-size:0.66rem; letter-spacing:0.06em; padding:4px 10px; border-radius:999px;
+    background:rgba(0,0,0,0.06); color:#7a6a68; border:1px solid rgba(0,0,0,0.1);
+  }
+  .task-cat.industrial{ background:rgba(196,0,16,0.1); color:var(--red-primary); border-color:rgba(196,0,16,0.25); }
+  .task-cat.servicios{ background:rgba(255,106,0,0.12); color:#c85400; border-color:rgba(255,106,0,0.3); }
+
+  .task-field{ font-size:1.02rem; font-weight:600; color:#1c1414; line-height:1.35; }
+  .task-field.desc{ font-size:0.88rem; font-weight:400; color:#5c4d4b; flex-grow:1; }
+  .task-field[data-empty="true"]{ color:#b3a5a3; font-weight:400; font-style:italic; }
+
+  .task-stack{ display:flex; gap:6px; flex-wrap:wrap; }
+  .task-stack span{
+    font-size:0.66rem; color:#7a6a68; border:1px solid rgba(0,0,0,0.12);
+    padding:3px 9px; border-radius:4px;
+  }
+  .task-stack .stack-empty{ font-style:italic; color:#b3a5a3; border-style:dashed; }
+
+  .task-open{
+    margin-top:auto; align-self:flex-start;
+    font-size:0.76rem; font-weight:600; letter-spacing:0.03em;
+    color:var(--red-primary); border-bottom:1px solid rgba(196,0,16,0.4);
+    padding-bottom:2px; transition:color 0.2s ease, border-color 0.2s ease;
+  }
+  .task-open:hover{ color:var(--ember); border-color:var(--ember); }
+
+  .task-card.hidden{ display:none; }
+
+  /* ---------- about strip ---------- */
+  .strip{
+    background:linear-gradient(90deg, rgba(196,0,16,0.16), rgba(255,106,0,0.1));
+    border-top:1px solid rgba(255,43,43,0.25);
+    border-bottom:1px solid rgba(255,43,43,0.25);
+    display:flex; justify-content:space-around; text-align:center; flex-wrap:wrap; gap:32px;
+    padding:48px 24px;
+  }
+  .strip div span{ display:block; }
+  .strip .num{ font-family:'Orbitron',sans-serif; font-size:2.2rem; font-weight:700; color:var(--chrome-light); }
+  .strip .label{ font-size:0.78rem; color:var(--text-muted); letter-spacing:0.05em; margin-top:4px; }
+
+  /* ---------- contact ---------- */
+  .contact{ text-align:center; }
+  .contact-panel{
+    max-width:640px; margin:0 auto; padding:52px 36px; border-radius:8px;
+    background:linear-gradient(160deg, var(--bg-panel), #170002);
+    border:1px solid rgba(255,43,43,0.35);
+    box-shadow:0 0 60px rgba(196,0,16,0.25);
+  }
+  .contact-panel h2{ font-size:1.9rem; margin-bottom:14px; }
+  .contact-panel p{ color:var(--text-muted); margin-bottom:28px; }
+
+  footer{
+    text-align:center; padding:32px 24px; color:var(--text-muted); font-size:0.78rem;
+    border-top:1px solid rgba(255,43,43,0.2);
+    position:relative; z-index:1;
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width:900px){
+    .catalog-grid{ grid-template-columns:repeat(2, 1fr); }
+    .orb{ width:220px; height:220px; top:6%; right:-40px; }
+  }
+
+  @media (max-width:680px){
+    .nav-links{ display:none; }
+    .burger{ display:flex; }
+    .catalog-grid{ grid-template-columns:1fr; }
+    .hero{ min-height:88vh; padding-top:60px; }
+    .strip{ padding:36px 20px; gap:24px; }
+    section{ padding:72px 20px; }
+    .orb{ width:160px; height:160px; opacity:0.6; }
+    .task-card-inner{ min-height:0; padding:20px 18px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-animated"></div>
+<div class="grid-overlay"></div>
+<div class="embers" id="embers"></div>
+
+<header>
+  <nav>
+    <a href="#top" class="logo">PORTAFOLIO</a>
+    <ul class="nav-links">
+      <li><a href="#top">Inicio</a></li>
+
+    </ul>
+    <button class="burger" id="burgerBtn" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" id="closeMenuBtn" aria-label="Cerrar menú">&times;</button>
+  <a href="#top">Inicio</a>
+
+</div>
+
+<main>
+  <section class="hero" id="top">
+    <div class="orb"></div>
+    <div class="wrap hero-content">
+      <span class="eyebrow-tag">Portafolio técnico</span>
+      <h1>PORTAFOLIO</h1>
+      <p class="sub">Automatización de procesos industriales y de servicios: control, integración y sistemas que hacen que las plantas y las operaciones corran solas.</p>
+      <div class="hero-cta">
+        <a href="#catalogo" class="btn-primary">Ver catálogo</a>
+      </div>
+    </div>
+  </section>
+
+
+  <section id="catalogo">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Catálogo de actividades</h2>
+        <p>Espacios en blanco listos para que registres tus propias actividades. Abre cada tarjeta en una página aparte para llenarla; los cambios se guardan en este navegador.</p>
+      </div>
+
+      <div class="filters" role="group" aria-label="Filtrar catálogo">
+        <button class="chip active" data-filter="todos">Todos</button>
+
+      </div>
+
+      <div class="catalog-grid" id="catalogGrid">
+        <!-- Las 6 tarjetas se generan en blanco por JS y se rellenan si hay datos guardados -->
+      </div>
+    </div>
+  </section>
+
+  
+</main>
+
+<footer>
+  &copy; 2026 Portafolio — Automatización de procesos industriales y de servicios.
+</footer>
+
+<script>
+  const burgerBtn = document.getElementById('burgerBtn');
+  const closeMenuBtn = document.getElementById('closeMenuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  function openMenu(){
+    mobileMenu.classList.add('open');
+    burgerBtn.setAttribute('aria-expanded','true');
+  }
+  function closeMenu(){
+    mobileMenu.classList.remove('open');
+    burgerBtn.setAttribute('aria-expanded','false');
+  }
+  burgerBtn.addEventListener('click', openMenu);
+  closeMenuBtn.addEventListener('click', closeMenu);
+  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+
+  /* ---------- ember particles ---------- */
+  const embersWrap = document.getElementById('embers');
+  const EMBER_COUNT = 14;
+  for(let i=0;i<EMBER_COUNT;i++){
+    const dot = document.createElement('span');
+    dot.className = 'ember-dot';
+    const left = Math.random()*100;
+    const duration = 9 + Math.random()*10;
+    const delay = Math.random()*12;
+    const drift = (Math.random()*80 - 40) + 'px';
+    dot.style.left = left + '%';
+    dot.style.animationDuration = duration + 's';
+    dot.style.animationDelay = delay + 's';
+    dot.style.setProperty('--drift', drift);
+    embersWrap.appendChild(dot);
+  }
+
+  /* ---------- blank editable catalog: 6 activity slots ---------- */
+  const STORAGE_PREFIX = 'portafolio_tarea_';
+  const TOTAL_CARDS = 6;
+  const grid = document.getElementById('catalogGrid');
+
+  function loadTarea(id){
+    try{
+      const raw = localStorage.getItem(STORAGE_PREFIX + id);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  }
+
+  function buildCard(id){
+    const data = loadTarea(id);
+    const categoria = data && data.categoria ? data.categoria : '';
+    const titulo = data && data.titulo ? data.titulo : '';
+    const descripcion = data && data.descripcion ? data.descripcion : '';
+    const etiquetas = data && data.etiquetas ? data.etiquetas.split(',').map(t=>t.trim()).filter(Boolean) : [];
+
+    const article = document.createElement('article');
+    article.className = 'task-card';
+    article.dataset.category = categoria;
+
+    const catLabel = categoria === 'industrial' ? 'Industrial' : categoria === 'servicios' ? 'Servicios' : 'Sin categoría';
+    const catClass = categoria === 'industrial' ? 'industrial' : categoria === 'servicios' ? 'servicios' : '';
+
+    const tagsHtml = etiquetas.length
+      ? etiquetas.map(t => `<span>${escapeHtml(t)}</span>`).join('')
+      : `<span class="stack-empty">Sin etiquetas</span>`;
+
+    article.innerHTML = `
+      <div class="task-card-inner">
+        <div class="task-top">
+          <span class="task-index">${String(id).padStart(2,'0')}</span>
+          <span class="task-cat ${catClass}">${catLabel}</span>
+        </div>
+        <div class="task-field" data-empty="${!titulo}">${titulo ? escapeHtml(titulo) : 'Espacio libre — abre la actividad para ponerle título'}</div>
+        <div class="task-field desc" data-empty="${!descripcion}">${descripcion ? escapeHtml(descripcion) : 'Aún sin descripción.'}</div>
+        <div class="task-stack">${tagsHtml}</div>
+        <a class="task-open" href="actividad.html?id=${id}" target="_blank" rel="noopener">Abrir actividad en otra página ↗</a>
+      </div>
+    `;
+    return article;
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderCatalog(){
+    grid.innerHTML = '';
+    for(let id=1; id<=TOTAL_CARDS; id++){
+      grid.appendChild(buildCard(id));
+    }
+  }
+  renderCatalog();
+
+  // re-render whenever the user comes back from the activity page (localStorage changed elsewhere)
+  window.addEventListener('storage', renderCatalog);
+  window.addEventListener('focus', renderCatalog);
+
+  const chips = document.querySelectorAll('.chip');
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      chips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const filter = chip.dataset.filter;
+      grid.querySelectorAll('.task-card').forEach(card => {
+        const match = filter === 'todos' || card.dataset.category === filter;
+        card.classList.toggle('hidden', !match);
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
